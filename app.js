@@ -12,11 +12,30 @@ let charts = {
   streamerCharts: {}
 };
 
+// API Configuration
+const API_BASE = window.location.origin + '/api';
+
+// ========================================
+// UTILITY FUNCTIONS - LOADING & ERRORS
+// ========================================
+function showLoading(show) {
+  // Console logging for now - can add visual spinner later
+  if (show) {
+    console.log('⏳ Loading...');
+  }
+}
+
+function showError(message) {
+  // Simple alert for now - can replace with toast notification
+  console.error('❌ Error:', message);
+  alert(message);
+}
+
 // ========================================
 // INITIALIZATION
 // ========================================
-document.addEventListener('DOMContentLoaded', () => {
-  loadStreamers();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadStreamers();
   initializeEventListeners();
   renderDashboard();
   renderStreamersList();
@@ -24,21 +43,115 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========================================
-// DATA MANAGEMENT
+// DATA MANAGEMENT - API CALLS
 // ========================================
-function loadStreamers() {
-  const stored = localStorage.getItem('streamers');
-  if (stored) {
-    streamers = JSON.parse(stored);
+async function loadStreamers() {
+  try {
+    showLoading(true);
+    const response = await fetch(`${API_BASE}/streamers`);
+    if (!response.ok) throw new Error('Failed to load streamers');
+    streamers = await response.json();
+  } catch (error) {
+    console.error('Error loading streamers:', error);
+    showError('Failed to load streamers. Make sure the server is running.');
+    streamers = [];
+  } finally {
+    showLoading(false);
   }
 }
 
-function saveStreamers() {
-  localStorage.setItem('streamers', JSON.stringify(streamers));
+async function createStreamer(name, platform, initialCount) {
+  try {
+    showLoading(true);
+    const response = await fetch(`${API_BASE}/streamers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, platform, initialCount })
+    });
+    
+    if (!response.ok) throw new Error('Failed to create streamer');
+    const newStreamer = await response.json();
+    streamers.push(newStreamer);
+    return newStreamer;
+  } catch (error) {
+    console.error('Error creating streamer:', error);
+    showError('Failed to add streamer. Please try again.');
+    throw error;
+  } finally {
+    showLoading(false);
+  }
 }
 
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+async function updateStreamer(id, name, platform) {
+  try {
+    showLoading(true);
+    const response = await fetch(`${API_BASE}/streamers/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, platform })
+    });
+    
+    if (!response.ok) throw new Error('Failed to update streamer');
+    const updated = await response.json();
+    
+    // Update local state
+    const index = streamers.findIndex(s => s.id === id);
+    if (index !== -1) {
+      streamers[index] = { ...streamers[index], ...updated };
+    }
+    return updated;
+  } catch (error) {
+    console.error('Error updating streamer:', error);
+    showError('Failed to update streamer. Please try again.');
+    throw error;
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function deleteStreamerAPI(id) {
+  try {
+    showLoading(true);
+    const response = await fetch(`${API_BASE}/streamers/${id}`, {
+      method: 'DELETE'
+    });
+    
+    if (!response.ok) throw new Error('Failed to delete streamer');
+    
+    // Remove from local state
+    streamers = streamers.filter(s => s.id !== id);
+  } catch (error) {
+    console.error('Error deleting streamer:', error);
+    showError('Failed to delete streamer. Please try again.');
+    throw error;
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function addSubscriberCount(id, count, timestamp) {
+  try {
+    showLoading(true);
+    const response = await fetch(`${API_BASE}/streamers/${id}/subscribers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ count, timestamp })
+    });
+    
+    if (!response.ok) throw new Error('Failed to add subscriber count');
+    
+    // Update local state
+    const streamer = streamers.find(s => s.id === id);
+    if (streamer) {
+      streamer.history.push({ count, timestamp });
+    }
+  } catch (error) {
+    console.error('Error adding subscriber count:', error);
+    showError('Failed to update subscriber count. Please try again.');
+    throw error;
+  } finally {
+    showLoading(false);
+  }
 }
 
 // ========================================
@@ -98,7 +211,7 @@ function switchView(viewName) {
 // ========================================
 // STREAMER MANAGEMENT
 // ========================================
-function addStreamer() {
+async function addStreamer() {
   const name = document.getElementById('streamer-name').value.trim();
   const platform = document.getElementById('streamer-platform').value;
   const initialSubs = parseInt(document.getElementById('initial-subs').value) || 0;
@@ -108,43 +221,37 @@ function addStreamer() {
     return;
   }
 
-  const streamer = {
-    id: generateId(),
-    name: name,
-    platform: platform,
-    history: [
-      {
-        count: initialSubs,
-        timestamp: Date.now()
-      }
-    ]
-  };
+  try {
+    await createStreamer(name, platform, initialSubs);
 
-  streamers.push(streamer);
-  saveStreamers();
+    // Celebration!
+    createConfetti();
 
-  // Celebration!
-  createConfetti();
+    // Reset form
+    document.getElementById('add-streamer-form').reset();
 
-  // Reset form
-  document.getElementById('add-streamer-form').reset();
-
-  // Update UI
-  renderStreamersList();
-  renderDashboard();
-  updateEmptyStates();
+    // Update UI
+    renderStreamersList();
+    renderDashboard();
+    updateEmptyStates();
+  } catch (error) {
+    // Error already handled in createStreamer
+  }
 }
 
-function deleteStreamer(id) {
+async function deleteStreamer(id) {
   const streamer = streamers.find(s => s.id === id);
   if (!streamer) return;
 
   if (confirm(`Are you sure you want to delete ${streamer.name}?`)) {
-    streamers = streamers.filter(s => s.id !== id);
-    saveStreamers();
-    renderStreamersList();
-    renderDashboard();
-    updateEmptyStates();
+    try {
+      await deleteStreamerAPI(id);
+      renderStreamersList();
+      renderDashboard();
+      updateEmptyStates();
+    } catch (error) {
+      // Error already handled in deleteStreamerAPI
+    }
   }
 }
 
@@ -163,11 +270,8 @@ function closeEditModal() {
   document.getElementById('edit-modal').classList.remove('active');
 }
 
-function saveStreamerEdit() {
+async function saveStreamerEdit() {
   if (!currentEditId) return;
-
-  const streamer = streamers.find(s => s.id === currentEditId);
-  if (!streamer) return;
 
   const name = document.getElementById('edit-streamer-name').value.trim();
   const platform = document.getElementById('edit-streamer-platform').value;
@@ -177,13 +281,14 @@ function saveStreamerEdit() {
     return;
   }
 
-  streamer.name = name;
-  streamer.platform = platform;
-  saveStreamers();
-
-  closeEditModal();
-  renderStreamersList();
-  renderDashboard();
+  try {
+    await updateStreamer(currentEditId, name, platform);
+    closeEditModal();
+    renderStreamersList();
+    renderDashboard();
+  } catch (error) {
+    // Error already handled in updateStreamer
+  }
 }
 
 function openUpdateModal(id) {
@@ -204,7 +309,7 @@ function closeUpdateModal() {
   document.getElementById('update-modal').classList.remove('active');
 }
 
-function saveSubscriberUpdate() {
+async function saveSubscriberUpdate() {
   if (!currentUpdateId) return;
 
   const streamer = streamers.find(s => s.id === currentUpdateId);
@@ -212,21 +317,22 @@ function saveSubscriberUpdate() {
 
   const newCount = parseInt(document.getElementById('new-subs').value) || 0;
   const oldCount = streamer.history[streamer.history.length - 1].count;
+  const timestamp = Date.now();
 
-  streamer.history.push({
-    count: newCount,
-    timestamp: Date.now()
-  });
-  saveStreamers();
+  try {
+    await addSubscriberCount(currentUpdateId, newCount, timestamp);
 
-  // Celebration if increased!
-  if (newCount > oldCount) {
-    createConfetti();
+    // Celebration if increased!
+    if (newCount > oldCount) {
+      createConfetti();
+    }
+
+    closeUpdateModal();
+    renderStreamersList();
+    renderDashboard();
+  } catch (error) {
+    // Error already handled in addSubscriberCount
   }
-
-  closeUpdateModal();
-  renderStreamersList();
-  renderDashboard();
 }
 
 // ========================================
