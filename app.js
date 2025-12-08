@@ -13,7 +13,7 @@ let charts = {
 };
 
 // API Configuration
-const API_BASE = window.location.origin + '/api';
+const API_BASE = 'http://127.0.0.1:2397/api';
 
 // ========================================
 // UTILITY FUNCTIONS - LOADING & ERRORS
