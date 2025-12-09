@@ -1,0 +1,25 @@
+/* ========================================
+   STREAMERS GRID RESPONSIVE OVERRIDE
+   Add this at the end of styles.css
+   ======================================== */
+
+/* Desktop and larger - Auto-fit with fixed width wrapping */
+#streamers-list {
+    display: grid;
+    gap: var(--spacing-md);
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+}
+
+/* Tablet - 2 columns */
+@media (max-width: 1023px) and (min-width: 600px) {
+    #streamers-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile - 1 column */
+@media (max-width: 599px) {
+    #streamers-list {
+        grid-template-columns: 1fr;
+    }
+}
