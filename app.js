@@ -555,8 +555,11 @@ function renderStreamerCharts() {
     const canvas = document.createElement('canvas');
     canvas.id = `streamer-chart-${streamer.id}`;
 
-    chartContainer.innerHTML = `<h3>📊 ${escapeHtml(streamer.name)}</h3>`;
-    chartContainer.appendChild(canvas);
+    chartContainer.innerHTML = `
+      <h3>📊 ${escapeHtml(streamer.name)}</h3>
+      <div class="chart-wrapper"></div>
+    `;
+    chartContainer.querySelector('.chart-wrapper').appendChild(canvas);
     container.appendChild(chartContainer);
 
     // Destroy old chart if exists
