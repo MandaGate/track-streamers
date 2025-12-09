@@ -255,6 +255,23 @@ async function deleteStreamer(id) {
   }
 }
 
+// Add Streamer Modal
+function openAddModal() {
+  document.getElementById('add-modal').classList.add('active');
+}
+
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('active');
+  document.getElementById('add-streamer-form').reset();
+}
+
+async function submitAddForm() {
+  await addStreamer();
+  if (streamers.length > 0) {
+    closeAddModal();
+  }
+}
+
 function openEditModal(id) {
   const streamer = streamers.find(s => s.id === id);
   if (!streamer) return;

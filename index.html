@@ -1,93 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streamer Tracker 🌟 - Track Your Favorite Streamers!</title>
-    <meta name="description" content="A fun and playful app to track subscriber counts of your favorite streamers across social media platforms.">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <img src="logo.png" alt="Streamer Tracker Logo" class="logo-icon" id="logoIcon">
-                <h1 class="app-title">Streamer Tracker 🌟</h1>
-            </div>
-            <nav class="nav">
-                <button class="nav-btn active" data-view="dashboard">📊 Dashboard</button>
-                <button class="nav-btn" data-view="streamers">👥 My Streamers</button>
-            </nav>
-        </div>
-    </header>
 
-    <div class="container">
-        <!-- Dashboard View -->
-        <div id="dashboard-view" class="view active">
-            <h2 class="mb-md">📊 Dashboard Overview</h2>
-            
-            <!-- Global Stats -->
-            <div class="stats-grid" id="global-stats">
-                <div class="stat-card">
-                    <p class="stat-value" id="total-subs">0</p>
-                    <p class="stat-label">Total Subscribers</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-value" id="total-streamers">0</p>
-                    <p class="stat-label">Tracked Streamers</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-value" id="avg-subs">0</p>
-                    <p class="stat-label">Avg Subscribers</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-value" id="top-streamer">-</p>
-                    <p class="stat-label">Top Streamer</p>
-                </div>
-            </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Streamer Tracker 🌟 - Track Your Favorite Streamers!</title>
+        <meta name="description" content="A fun and playful app to track subscriber counts of your favorite streamers across social media platforms.">
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    </head>
 
-            <!-- Charts -->
-            <div class="grid grid-2">
-                <div class="chart-container">
-                    <h3>📈 Subscriber Distribution</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="distribution-chart"></canvas>
+    <body>
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.png" alt="Streamer Tracker Logo" class="logo-icon" id="logoIcon">
+                    <h1 class="app-title">Streamer Tracker 🌟</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-view="dashboard">📊 Dashboard</button>
+                    <button class="nav-btn" data-view="streamers">👥 My Streamers</button>
+                </nav>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <h2 class="mb-md">📊 Dashboard Overview</h2>
+
+                <!-- Global Stats -->
+                <div class="stats-grid" id="global-stats">
+                    <div class="stat-card">
+                        <p class="stat-value" id="total-subs">0</p>
+                        <p class="stat-label">Total Subscribers</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-value" id="total-streamers">0</p>
+                        <p class="stat-label">Tracked Streamers</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-value" id="avg-subs">0</p>
+                        <p class="stat-label">Avg Subscribers</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-value" id="top-streamer">-</p>
+                        <p class="stat-label">Top Streamer</p>
                     </div>
                 </div>
-                <div class="chart-container">
-                    <h3>🏆 Streamer Comparison</h3>
-                    <div class="chart-wrapper">
-                        <canvas id="comparison-chart"></canvas>
+
+                <!-- Charts -->
+                <div class="grid grid-2">
+                    <div class="chart-container">
+                        <h3>📈 Subscriber Distribution</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="distribution-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>🏆 Streamer Comparison</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="comparison-chart"></canvas>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Per Streamer Details -->
-            <div class="mt-lg">
-                <h2 class="mb-md">🎮 Individual Streamer Stats</h2>
-                <div id="streamer-charts" class="grid grid-2">
-                    <!-- Streamer charts will be dynamically added here -->
+                <!-- Per Streamer Details -->
+                <div class="mt-lg">
+                    <h2 class="mb-md">🎮 Individual Streamer Stats</h2>
+                    <div id="streamer-charts" class="grid grid-2">
+                        <!-- Streamer charts will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="dashboard-empty" class="empty-state hidden">
+                    <div class="empty-icon">🎯</div>
+                    <h2 class="empty-title">No Streamers Yet!</h2>
+                    <p class="empty-text">Start tracking your favorite streamers by adding them in the "My Streamers" tab!</p>
+                    <button class="btn btn-primary btn-lg" onclick="switchView('streamers')">➕ Add Your First Streamer</button>
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div id="dashboard-empty" class="empty-state hidden">
-                <div class="empty-icon">🎯</div>
-                <h2 class="empty-title">No Streamers Yet!</h2>
-                <p class="empty-text">Start tracking your favorite streamers by adding them in the "My Streamers" tab!</p>
-                <button class="btn btn-primary btn-lg" onclick="switchView('streamers')">➕ Add Your First Streamer</button>
+            <!-- Streamers View -->
+            <div id="streamers-view" class="view">
+                <div class="streamers-header">
+                    <h2>👥 My Streamers</h2>
+                    <button class="btn btn-primary btn-lg" onclick="openAddModal()">➕ Add Streamer</button>
+                </div>
+
+                <div id="streamers-list" class="grid">
+                    <!-- Streamers will be dynamically added here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="streamers-empty" class="empty-state hidden">
+                    <div class="empty-icon">🌈</div>
+                    <h2 class="empty-title">No Streamers Yet!</h2>
+                    <p class="empty-text">Add your first streamer to start tracking!</p>
+                    <button class="btn btn-primary btn-lg" onclick="openAddModal()">➕ Add Your First Streamer</button>
+                </div>
             </div>
         </div>
 
-        <!-- Streamers View -->
-        <div id="streamers-view" class="view">
-            <div class="card mb-lg">
-                <div class="card-header">
-                    <h2 class="card-title">➕ Add New Streamer</h2>
+        <!-- Add Streamer Modal -->
+        <div id="add-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">➕ Add New Streamer</h2>
+                    <button class="modal-close" onclick="closeAddModal()">×</button>
                 </div>
-                <div class="card-body">
+                <div class="modal-body">
                     <form id="add-streamer-form">
                         <div class="form-group">
                             <label class="form-label" for="streamer-name">Streamer Name</label>
@@ -110,79 +134,70 @@
                             <label class="form-label" for="initial-subs">Initial Subscriber Count</label>
                             <input type="number" id="initial-subs" class="form-input" placeholder="0" min="0" required>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg">🎉 Add Streamer</button>
                     </form>
                 </div>
-            </div>
-
-            <h2 class="mb-md">👥 My Streamers</h2>
-            <div id="streamers-list" class="grid">
-                <!-- Streamers will be dynamically added here -->
-            </div>
-
-            <!-- Empty State -->
-            <div id="streamers-empty" class="empty-state hidden">
-                <div class="empty-icon">🌈</div>
-                <h2 class="empty-title">No Streamers Yet!</h2>
-                <p class="empty-text">Add your first streamer using the form above to start tracking!</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Update Subscriber Modal -->
-    <div id="update-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">📈 Update Subscribers</h2>
-                <button class="modal-close" onclick="closeUpdateModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Streamer:</strong> <span id="modal-streamer-name"></span></p>
-                <p><strong>Current Subscribers:</strong> <span id="modal-current-subs"></span></p>
-                <div class="form-group mt-md">
-                    <label class="form-label" for="new-subs">New Subscriber Count</label>
-                    <input type="number" id="new-subs" class="form-input" placeholder="Enter new count..." min="0" required>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddForm()">🎉 Add Streamer</button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeUpdateModal()">Cancel</button>
-                <button class="btn btn-success" onclick="saveSubscriberUpdate()">💾 Save Update</button>
-            </div>
         </div>
-    </div>
 
-    <!-- Edit Streamer Modal -->
-    <div id="edit-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">✏️ Edit Streamer</h2>
-                <button class="modal-close" onclick="closeEditModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label" for="edit-streamer-name">Streamer Name</label>
-                    <input type="text" id="edit-streamer-name" class="form-input" required>
+        <!-- Update Subscriber Modal -->
+        <div id="update-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">📈 Update Subscribers</h2>
+                    <button class="modal-close" onclick="closeUpdateModal()">×</button>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="edit-streamer-platform">Platform</label>
-                    <select id="edit-streamer-platform" class="form-select" required>
-                        <option value="YouTube">YouTube</option>
-                        <option value="Twitch">Twitch</option>
-                        <option value="TikTok">TikTok</option>
-                        <option value="Instagram">Instagram</option>
-                        <option value="Twitter">Twitter</option>
-                        <option value="Facebook">Facebook</option>
-                        <option value="Other">Other</option>
-                    </select>
+                <div class="modal-body">
+                    <p><strong>Streamer:</strong> <span id="modal-streamer-name"></span></p>
+                    <p><strong>Current Subscribers:</strong> <span id="modal-current-subs"></span></p>
+                    <div class="form-group mt-md">
+                        <label class="form-label" for="new-subs">New Subscriber Count</label>
+                        <input type="number" id="new-subs" class="form-input" placeholder="Enter new count..." min="0" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeUpdateModal()">Cancel</button>
+                    <button class="btn btn-success" onclick="saveSubscriberUpdate()">💾 Save Update</button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveStreamerEdit()">💾 Save Changes</button>
+        </div>
+
+        <!-- Edit Streamer Modal -->
+        <div id="edit-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">✏️ Edit Streamer</h2>
+                    <button class="modal-close" onclick="closeEditModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="edit-streamer-name">Streamer Name</label>
+                        <input type="text" id="edit-streamer-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="edit-streamer-platform">Platform</label>
+                        <select id="edit-streamer-platform" class="form-select" required>
+                            <option value="YouTube">YouTube</option>
+                            <option value="Twitch">Twitch</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="Twitter">Twitter</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveStreamerEdit()">💾 Save Changes</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script src="app.js"></script>
-</body>
+        <script src="app.js"></script>
+    </body>
+
 </html>
