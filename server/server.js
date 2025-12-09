@@ -12,7 +12,21 @@ const PORT = process.env.PORT || 3000;
 // ========================================
 // MIDDLEWARE
 // ========================================
-app.use(cors());
+// CORS configuration - Allow all localhost ports (for Angular dev server on 4200, etc.)
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow any localhost or 127.0.0.1 on any port
+    if (origin.match(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

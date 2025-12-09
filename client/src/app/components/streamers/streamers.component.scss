@@ -1,0 +1,34 @@
+// Streamers specific styles
+.streamers-view {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.streamers-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.stat-item-value {
+  &.positive {
+    color: var(--color-success);
+  }
+
+  &.negative {
+    color: var(--color-danger);
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}

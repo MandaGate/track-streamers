@@ -1,0 +1,22 @@
+// Dashboard specific styles
+.dashboard-view {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.charts-section {
+  padding: 2rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  text-align: center;
+  
+  h3 {
+    color: var(--color-primary);
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}

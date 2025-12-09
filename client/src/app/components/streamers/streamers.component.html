@@ -1,0 +1,51 @@
+<div class="streamers-view">
+    <div class="streamers-header">
+        <h2>👥 My Streamers</h2>
+        <button class="btn btn-primary btn-lg" (click)="onAdd()">➕ Add Streamer</button>
+    </div>
+
+    <div *ngIf="streamers.length > 0" id="streamers-list" class="grid">
+        <div *ngFor="let streamer of streamers" class="streamer-item">
+            <div class="streamer-header">
+                <h3 class="streamer-name">{{ streamer.name }}</h3>
+                <span class="streamer-platform">{{ streamer.platform }}</span>
+            </div>
+
+            <div class="streamer-stats">
+                <div class="stat-item">
+                    <span class="stat-item-label">Current Subs</span>
+                    <span class="stat-item-value">{{ getLatestCount(streamer) | number }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-item-label">Growth</span>
+                    <span class="stat-item-value" [class.positive]="getGrowth(streamer) > 0" [class.negative]="getGrowth(streamer) < 0">
+                        {{ getGrowth(streamer) >= 0 ? '+' : '' }}{{ getGrowth(streamer) | number }}
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-item-label">Updates</span>
+                    <span class="stat-item-value">{{ getTotalUpdates(streamer) }}</span>
+                </div>
+            </div>
+
+            <div class="streamer-actions">
+                <button class="btn btn-sm btn-info" (click)="onUpdate(streamer)">📈 Update</button>
+                <button class="btn btn-sm btn-secondary" (click)="onEdit(streamer)">✏️ Edit</button>
+                <button class="btn btn-sm btn-danger" (click)="onDelete(streamer.id, streamer.name)">🗑️ Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="streamers.length === 0 && !loading" class="empty-state">
+        <div class="empty-icon">🌈</div>
+        <h2 class="empty-title">No Streamers Yet!</h2>
+        <p class="empty-text">Add your first streamer to start tracking!</p>
+        <button class="btn btn-primary btn-lg" (click)="onAdd()">➕ Add Your First Streamer</button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+        <p>Loading streamers...</p>
+    </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="dashboard-view">
+    <h2 class="mb-md">📊 Dashboard Overview</h2>
+
+    <!-- Global Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <p class="stat-value">{{ globalStats.totalSubs | number }}</p>
+            <p class="stat-label">Total Subscribers</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-value">{{ globalStats.totalStreamers }}</p>
+            <p class="stat-label">Tracked Streamers</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-value">{{ globalStats.avgSubs | number }}</p>
+            <p class="stat-label">Avg Subscribers</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-value">{{ globalStats.topStreamer }}</p>
+            <p class="stat-label">Top Streamer</p>
+        </div>
+    </div>
+
+    <!-- Charts Section - Coming Soon -->
+    <div class="charts-section mt-lg">
+        <h3>📈 Charts coming soon...</h3>
+        <p>Chart.js integration will be added in the next phase</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="streamers.length === 0 && !loading" class="empty-state">
+        <div class="empty-icon">🎯</div>
+        <h2 class="empty-title">No Streamers Yet!</h2>
+        <p class="empty-text">Start tracking your favorite streamers by adding them in the "My Streamers" tab!</p>
+        <button class="btn btn-primary btn-lg" routerLink="/streamers">➕ Add Your First Streamer</button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+        <p>Loading...</p>
+    </div>
+</div>
