@@ -1,0 +1,60 @@
+name: streamer_tracker
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: streamer-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-streamer_tracker}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - streamer-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Node.js Server
+  server:
+    build: ./server
+    container_name: streamer-server
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME:-streamer_tracker}
+      - DB_PORT=5432
+      - NODE_ENV=production
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - streamer-network
+
+  # Angular Client (Nginx)
+  client:
+    build: ./client
+    container_name: streamer-client
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - streamer-network
+
+volumes:
+  postgres_data:
+
+networks:
+  streamer-network:
+    driver: bridge
