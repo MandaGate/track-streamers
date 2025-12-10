@@ -42,18 +42,19 @@ export class StreamersComponent implements OnInit, OnDestroy {
   }
 
   getLatestCount(streamer: Streamer): number {
+    if (!streamer.history || streamer.history.length === 0) return 0;
     return streamer.history[streamer.history.length - 1]?.count || 0;
   }
 
   getGrowth(streamer: Streamer): number {
-    if (streamer.history.length < 2) return 0;
+    if (!streamer.history || streamer.history.length < 2) return 0;
     const latest = streamer.history[streamer.history.length - 1]?.count || 0;
     const previous = streamer.history[streamer.history.length - 2]?.count || 0;
     return latest - previous;
   }
 
   getTotalUpdates(streamer: Streamer): number {
-    return streamer.history.length;
+    return streamer.history?.length || 0;
   }
 
   onDelete(id: number, name: string): void {

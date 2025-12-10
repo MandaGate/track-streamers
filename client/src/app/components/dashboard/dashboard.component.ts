@@ -72,14 +72,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   calculateStats(): void {
     const totalSubs = this.streamers.reduce((sum, s) => {
+      if (!s.history || s.history.length === 0) return sum;
       const latest = s.history[s.history.length - 1];
       return sum + (latest?.count || 0);
     }, 0);
 
     const topStreamer = this.streamers.reduce((top, s) => {
       if (!top) return s;
-      const latestCount = s.history[s.history.length - 1]?.count || 0;
-      const topCount = top.history[top.history.length - 1]?.count || 0;
+      const latestCount = s.history && s.history.length > 0 ? s.history[s.history.length - 1].count : 0;
+      const topCount = top.history && top.history.length > 0 ? top.history[top.history.length - 1].count : 0;
       return latestCount > topCount ? s : top;
     }, this.streamers[0]);
 
@@ -110,8 +111,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // 2. Comparison Chart (Bar)
     const sortedStreamers = [...this.streamers].sort((a, b) => {
-      const countA = a.history[a.history.length - 1]?.count || 0;
-      const countB = b.history[b.history.length - 1]?.count || 0;
+      const countA = a.history && a.history.length > 0 ? a.history[a.history.length - 1].count : 0;
+      const countB = b.history && b.history.length > 0 ? b.history[b.history.length - 1].count : 0;
       return countB - countA;
     }).slice(0, 5);
 
@@ -119,7 +120,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       labels: sortedStreamers.map(s => s.name),
       datasets: [{
         label: 'Subscribers',
-        data: sortedStreamers.map(s => s.history[s.history.length - 1]?.count || 0),
+        data: sortedStreamers.map(s => s.history && s.history.length > 0 ? s.history[s.history.length - 1].count : 0),
         backgroundColor: sortedStreamers.map((_, i) => [
           '#FF6B9D', '#C44DFF', '#00B4FF', '#00D9A3', '#FFA800'
         ][i % 5])
@@ -128,7 +129,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // 3. Individual Streamer Charts (Line)
     this.streamers.forEach(streamer => {
-      const history = streamer.history.slice(-10); // Last 10 updates
+      const history = streamer.history ? streamer.history.slice(-10) : []; // Last 10 updates
       this.streamerCharts[streamer.id] = {
         labels: history.map(h => new Date(h.timestamp).toLocaleDateString()),
         datasets: [{
