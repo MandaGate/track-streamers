@@ -133,6 +133,10 @@ h3 { font-size: 1.5rem; }
 .app-title {
   margin: 0;
   font-size: 2.5rem;
+  background: var(--gradient-rainbow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ========================================
