@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { StreamerService } from '../../services/streamer.service';
+import { ModalService } from '../../services/modal.service';
 import { Streamer } from '../../models/streamer.model';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -18,7 +19,10 @@ export class StreamersComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private streamerService: StreamerService) {}
+  constructor(
+    private streamerService: StreamerService,
+    private modalService: ModalService
+  ) {}
 
   ngOnInit(): void {
     this.streamerService.streamers$
@@ -62,17 +66,14 @@ export class StreamersComponent implements OnInit, OnDestroy {
   }
 
   onEdit(streamer: Streamer): void {
-    // TODO: Open edit modal
-    console.log('Edit:', streamer);
+    this.modalService.open('edit', streamer);
   }
 
   onUpdate(streamer: Streamer): void {
-    // TODO: Open update subscribers modal
-    console.log('Update:', streamer);
+    this.modalService.open('update', streamer);
   }
 
   onAdd(): void {
-    // TODO: Open add modal
-    console.log('Add new streamer');
+    this.modalService.open('add');
   }
 }

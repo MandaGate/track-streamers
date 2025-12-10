@@ -21,10 +21,34 @@
         </div>
     </div>
 
-    <!-- Charts Section - Coming Soon -->
-    <div class="charts-section mt-lg">
-        <h3>📈 Charts coming soon...</h3>
-        <p>Chart.js integration will be added in the next phase</p>
+    <!-- Charts -->
+    <div class="grid grid-2" *ngIf="streamers.length > 0">
+        <div class="chart-container">
+            <h3>📈 Subscriber Distribution</h3>
+            <div class="chart-wrapper">
+                <app-chart type="doughnut" [data]="distributionData" [options]="doughnutOptions"></app-chart>
+            </div>
+        </div>
+        <div class="chart-container">
+            <h3>🏆 Streamer Comparison</h3>
+            <div class="chart-wrapper">
+                <app-chart type="bar" [data]="comparisonData" [options]="barOptions"></app-chart>
+            </div>
+        </div>
+    </div>
+
+    <!-- Per Streamer Details -->
+    <div class="mt-lg" *ngIf="streamers.length > 0">
+        <h2 class="mb-md">🎮 Individual Streamer Stats</h2>
+        <div class="grid grid-2">
+            <div *ngFor="let streamer of streamers" class="chart-container">
+                <h3>📊 {{ streamer.name }}</h3>
+                <div class="chart-wrapper">
+                    <app-chart type="line" [data]="streamerCharts[streamer.id]" [options]="lineOptions">
+                    </app-chart>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Empty State -->

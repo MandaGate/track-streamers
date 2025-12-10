@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { StreamerService } from '../../services/streamer.service';
 import { Streamer } from '../../models/streamer.model';
 import { Subject, takeUntil } from 'rxjs';
+import { ChartComponent } from '../shared/chart.component';
+import { ChartConfiguration } from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -22,25 +24,44 @@ export class DashboardComponent implements OnInit, OnDestroy {
     topStreamer: '-'
   };
 
+  // Chart Data
+  distributionData: ChartConfiguration['data'] = { datasets: [] };
+  comparisonData: ChartConfiguration['data'] = { datasets: [] };
+  streamerCharts: { [key: number]: ChartConfiguration['data'] } = {};
+  
+  // Chart Options
+  doughnutOptions: ChartConfiguration['options'] = {
+    plugins: { legend: { position: 'bottom' } }
+  };
+  
+  barOptions: ChartConfiguration['options'] = {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  };
+
+  lineOptions: ChartConfiguration['options'] = {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: false } },
+    elements: { line: { tension: 0.4 } }
+  };
+
   private destroy$ = new Subject<void>();
 
   constructor(private streamerService: StreamerService) {}
 
   ngOnInit(): void {
-    // Subscribe to streamers
     this.streamerService.streamers$
       .pipe(takeUntil(this.destroy$))
       .subscribe(streamers => {
         this.streamers = streamers;
         this.calculateStats();
+        this.prepareCharts();
       });
 
-    // Subscribe to loading state
     this.streamerService.loading$
       .pipe(takeUntil(this.destroy$))
       .subscribe(loading => this.loading = loading);
 
-    // Initial load
     this.streamerService.loadStreamers().subscribe();
   }
 
@@ -68,6 +89,59 @@ export class DashboardComponent implements OnInit, OnDestroy {
       avgSubs: this.streamers.length > 0 ? Math.round(totalSubs / this.streamers.length) : 0,
       topStreamer: topStreamer?.name || '-'
     };
+  }
+
+  prepareCharts(): void {
+    if (this.streamers.length === 0) return;
+
+    // 1. Distribution Chart (Doughnut)
+    const platformCounts: { [key: string]: number } = {};
+    this.streamers.forEach(s => {
+      platformCounts[s.platform] = (platformCounts[s.platform] || 0) + 1;
+    });
+
+    this.distributionData = {
+      labels: Object.keys(platformCounts),
+      datasets: [{
+        data: Object.values(platformCounts),
+        backgroundColor: ['#FF6B9D', '#C44DFF', '#00B4FF', '#00D9A3', '#FFA800', '#FFD93D', '#FF6B6B']
+      }]
+    };
+
+    // 2. Comparison Chart (Bar)
+    const sortedStreamers = [...this.streamers].sort((a, b) => {
+      const countA = a.history[a.history.length - 1]?.count || 0;
+      const countB = b.history[b.history.length - 1]?.count || 0;
+      return countB - countA;
+    }).slice(0, 5);
+
+    this.comparisonData = {
+      labels: sortedStreamers.map(s => s.name),
+      datasets: [{
+        label: 'Subscribers',
+        data: sortedStreamers.map(s => s.history[s.history.length - 1]?.count || 0),
+        backgroundColor: sortedStreamers.map((_, i) => [
+          '#FF6B9D', '#C44DFF', '#00B4FF', '#00D9A3', '#FFA800'
+        ][i % 5])
+      }]
+    };
+
+    // 3. Individual Streamer Charts (Line)
+    this.streamers.forEach(streamer => {
+      const history = streamer.history.slice(-10); // Last 10 updates
+      this.streamerCharts[streamer.id] = {
+        labels: history.map(h => new Date(h.timestamp).toLocaleDateString()),
+        datasets: [{
+          label: 'Subscribers',
+          data: history.map(h => h.count),
+          borderColor: '#C44DFF',
+          backgroundColor: 'rgba(196, 77, 255, 0.1)',
+          fill: true,
+          pointBackgroundColor: '#FF6B9D',
+          pointRadius: 4
+        }]
+      };
+    });
   }
 
   switchToStreamers(): void {

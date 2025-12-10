@@ -45,17 +45,17 @@
 ## 🔄 To Do
 
 ### Modals
-- [ ] AddStreamerModal component
-- [ ] EditStreamerModal component
-- [ ] UpdateSubscribersModal component
-- [ ] Modal service
+- ✅ AddStreamerModal component
+- ✅ EditStreamerModal component
+- ✅ UpdateSubscribersModal component
+- ✅ Modal service
 
 ### Charts
-- [ ] Install ng2-charts
-- [ ] Create chart components
-- [ ] Distribution doughnut chart
-- [ ] Comparison bar chart
-- [ ] Individual line charts
+- ✅ Install ng2-charts (dependency added)
+- ✅ Create chart components
+- ✅ Distribution doughnut chart
+- ✅ Comparison bar chart
+- ✅ Individual line charts
 
 ### Forms
 - [ ] Reactive forms setup

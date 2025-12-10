@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ModalContainerComponent } from './components/modals/modal-container.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ModalContainerComponent],
   template: `
     <header class="header">
       <div class="header-content">
@@ -34,6 +35,8 @@ import { CommonModule } from '@angular/common';
     <div class="container">
       <router-outlet></router-outlet>
     </div>
+
+    <app-modal-container></app-modal-container>
   `,
   styles: []
 })
