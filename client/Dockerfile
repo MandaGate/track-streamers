@@ -7,13 +7,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN yarn install
 
 # Copy source code
 COPY . .
 
 # Build for production
-RUN npm run build -- --configuration=production
+RUN yarn build -- --configuration=production
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
@@ -22,6 +22,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist/streamer-tracker /usr/share/nginx/html
 
 # Copy Nginx configuration
+# Copy from build context (not the build stage)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
