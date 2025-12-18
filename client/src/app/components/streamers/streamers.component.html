@@ -17,9 +17,15 @@
                     (ngModelChange)="onSearchChange($event)"
                 />
             </div>
-            <div class="range">
-                <label for="minSubs">Min subs: <strong>{{ minSubs | number }}</strong></label>
-                <input id="minSubs" type="range" [min]="0" [max]="maxSubs" [step]="1" [ngModel]="minSubs" (ngModelChange)="onMinSubsChange($event)" />
+            <div class="ranges">
+                <div class="range">
+                    <label for="minSubs">Min subs: <strong>{{ minSubs | number }}</strong></label>
+                    <input id="minSubs" type="range" [min]="0" [max]="maxSubs" [step]="1" [ngModel]="minSubs" (ngModelChange)="onMinSubsChange($event)" />
+                </div>
+                <div class="range">
+                    <label for="maxSubs">Max subs: <strong>{{ maxSubsFilter | number }}</strong></label>
+                    <input id="maxSubs" type="range" [min]="minSubs" [max]="maxSubs" [step]="1" [ngModel]="maxSubsFilter" (ngModelChange)="onMaxSubsChange($event)" />
+                </div>
             </div>
         </div>
         <div class="chips">
@@ -32,7 +38,7 @@
                 (click)="togglePlatform(p)"
             >{{ p }}</button>
         </div>
-        <div class="results-info">Showing {{ filteredStreamers.length }} of {{ streamers.length }}</div>
+        <div class="results-info">Showing {{ filteredStreamers.length }} of {{ streamers.length }} • Range {{ minSubs | number }}–{{ maxSubsFilter | number }}</div>
     </div>
 
     <div *ngIf="filteredStreamers.length > 0" id="streamers-list" class="grid">

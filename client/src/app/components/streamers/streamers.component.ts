@@ -25,6 +25,7 @@ export class StreamersComponent implements OnInit, OnDestroy {
   platforms: string[] = [];
   minSubs = 0;
   maxSubs = 0;
+  maxSubsFilter = 0;
 
   private destroy$ = new Subject<void>();
 
@@ -40,7 +41,13 @@ export class StreamersComponent implements OnInit, OnDestroy {
         this.streamers = streamers;
         this.platforms = this.computePlatforms(streamers);
         this.maxSubs = this.computeMaxSubs(streamers);
-        if (this.minSubs > this.maxSubs) this.minSubs = 0;
+        // Initialize or clamp the max filter to the available range
+        if (this.maxSubsFilter === 0 || this.maxSubsFilter > this.maxSubs) {
+          this.maxSubsFilter = this.maxSubs;
+        }
+        if (this.minSubs > this.maxSubsFilter) {
+          this.minSubs = this.maxSubsFilter;
+        }
         this.applyFilters();
       });
 
@@ -116,6 +123,18 @@ export class StreamersComponent implements OnInit, OnDestroy {
   onMinSubsChange(val: number | string): void {
     const n = typeof val === 'string' ? parseInt(val, 10) : val;
     this.minSubs = isNaN(Number(n)) ? 0 : Number(n);
+    if (this.minSubs > this.maxSubsFilter) {
+      this.maxSubsFilter = this.minSubs;
+    }
+    this.applyFilters();
+  }
+
+  onMaxSubsChange(val: number | string): void {
+    const n = typeof val === 'string' ? parseInt(val, 10) : val;
+    this.maxSubsFilter = isNaN(Number(n)) ? this.maxSubs : Math.min(Number(n), this.maxSubs);
+    if (this.maxSubsFilter < this.minSubs) {
+      this.minSubs = this.maxSubsFilter;
+    }
     this.applyFilters();
   }
 
@@ -144,11 +163,16 @@ export class StreamersComponent implements OnInit, OnDestroy {
     return this.getLatestCount(s) >= this.minSubs;
   }
 
+  private matchesMaxSubs(s: Streamer): boolean {
+    return this.getLatestCount(s) <= this.maxSubsFilter;
+  }
+
   applyFilters(): void {
     this.filteredStreamers = (this.streamers || []).filter(s =>
       this.matchesSearch(s) &&
       this.matchesPlatform(s) &&
-      this.matchesMinSubs(s)
+      this.matchesMinSubs(s) &&
+      this.matchesMaxSubs(s)
     );
   }
 }

@@ -63,6 +63,13 @@
       }
     }
 
+    .ranges {
+      display: flex;
+      gap: var(--spacing-md);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
     .range {
       display: flex;
       flex-direction: column;
@@ -74,7 +81,7 @@
       }
 
       input[type="range"] {
-        width: 260px;
+        width: 220px;
         accent-color: var(--color-secondary);
       }
     }
