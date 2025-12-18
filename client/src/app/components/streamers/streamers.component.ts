@@ -79,6 +79,12 @@ export class StreamersComponent implements OnInit, OnDestroy {
     return streamer.history?.length || 0;
   }
 
+  getEarnings(streamer: Streamer): number {
+    const latest = this.getLatestCount(streamer);
+    const blocks = Math.floor(latest / 19500);
+    return blocks * 30;
+  }
+
   onDelete(id: number, name: string): void {
     if (confirm(`Are you sure you want to delete ${name}?`)) {
       this.streamerService.deleteStreamer(id).subscribe({

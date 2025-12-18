@@ -22,7 +22,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     totalSubs: 0,
     totalStreamers: 0,
     avgSubs: 0,
-    topStreamer: '-'
+    topStreamer: '-',
+    totalEarnings: 0
   };
 
   // Chart Data
@@ -85,11 +86,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return latestCount > topCount ? s : top;
     }, this.streamers[0]);
 
+    const totalEarnings = Math.floor(totalSubs / 19500) * 30;
+
     this.globalStats = {
       totalSubs,
       totalStreamers: this.streamers.length,
       avgSubs: this.streamers.length > 0 ? Math.round(totalSubs / this.streamers.length) : 0,
-      topStreamer: topStreamer?.name || '-'
+      topStreamer: topStreamer?.name || '-',
+      totalEarnings
     };
   }
 
