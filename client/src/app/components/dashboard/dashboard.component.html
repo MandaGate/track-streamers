@@ -38,14 +38,16 @@
     </div>
 
     <!-- Per Streamer Details -->
-    <div class="mt-lg" *ngIf="streamers.length > 0">
+    <div class="mt-lg" *ngIf="streamersWith3Plus.length > 0">
         <h2 class="mb-md">🎮 Individual Streamer Stats</h2>
         <div class="grid grid-2">
-            <div *ngFor="let streamer of streamers" class="chart-container">
-                <h3>📊 {{ streamer.name }}</h3>
-                <div class="chart-wrapper">
-                    <app-chart type="line" [data]="streamerCharts[streamer.id]" [options]="lineOptions">
-                    </app-chart>
+            <div *ngFor="let streamer of streamersWith3Plus">
+                <div class="chart-container">
+                    <h3>📊 {{ streamer.name }}</h3>
+                    <div class="chart-wrapper">
+                        <app-chart type="line" [data]="streamerCharts[streamer.id]" [options]="lineOptions">
+                        </app-chart>
+                    </div>
                 </div>
             </div>
         </div>

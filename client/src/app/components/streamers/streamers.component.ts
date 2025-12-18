@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { StreamerService } from '../../services/streamer.service';
 import { ModalService } from '../../services/modal.service';
@@ -9,13 +10,21 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'app-streamers',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './streamers.component.html',
   styleUrls: ['./streamers.component.scss']
 })
 export class StreamersComponent implements OnInit, OnDestroy {
   streamers: Streamer[] = [];
+  filteredStreamers: Streamer[] = [];
   loading = false;
+
+  // Filters
+  searchTerm = '';
+  selectedPlatforms = new Set<string>();
+  platforms: string[] = [];
+  minSubs = 0;
+  maxSubs = 0;
 
   private destroy$ = new Subject<void>();
 
@@ -27,7 +36,13 @@ export class StreamersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.streamerService.streamers$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(streamers => this.streamers = streamers);
+      .subscribe(streamers => {
+        this.streamers = streamers;
+        this.platforms = this.computePlatforms(streamers);
+        this.maxSubs = this.computeMaxSubs(streamers);
+        if (this.minSubs > this.maxSubs) this.minSubs = 0;
+        this.applyFilters();
+      });
 
     this.streamerService.loading$
       .pipe(takeUntil(this.destroy$))
@@ -76,5 +91,64 @@ export class StreamersComponent implements OnInit, OnDestroy {
 
   onAdd(): void {
     this.modalService.open('add');
+  }
+
+  // ---- Filtering helpers ----
+  onSearchChange(term: string): void {
+    this.searchTerm = term;
+    this.applyFilters();
+  }
+
+  togglePlatform(p: string): void {
+    if (this.selectedPlatforms.has(p)) {
+      this.selectedPlatforms.delete(p);
+    } else {
+      this.selectedPlatforms.add(p);
+    }
+    this.applyFilters();
+  }
+
+  clearPlatforms(): void {
+    this.selectedPlatforms.clear();
+    this.applyFilters();
+  }
+
+  onMinSubsChange(val: number | string): void {
+    const n = typeof val === 'string' ? parseInt(val, 10) : val;
+    this.minSubs = isNaN(Number(n)) ? 0 : Number(n);
+    this.applyFilters();
+  }
+
+  private computePlatforms(list: Streamer[]): string[] {
+    const set = new Set<string>();
+    list.forEach(s => s.platform && set.add(s.platform));
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }
+
+  private computeMaxSubs(list: Streamer[]): number {
+    return list.reduce((max, s) => Math.max(max, this.getLatestCount(s)), 0);
+  }
+
+  private matchesSearch(s: Streamer): boolean {
+    if (!this.searchTerm) return true;
+    const term = this.searchTerm.trim().toLowerCase();
+    return s.name.toLowerCase().includes(term) || (s.platform || '').toLowerCase().includes(term);
+  }
+
+  private matchesPlatform(s: Streamer): boolean {
+    if (this.selectedPlatforms.size === 0) return true;
+    return this.selectedPlatforms.has(s.platform);
+  }
+
+  private matchesMinSubs(s: Streamer): boolean {
+    return this.getLatestCount(s) >= this.minSubs;
+  }
+
+  applyFilters(): void {
+    this.filteredStreamers = (this.streamers || []).filter(s =>
+      this.matchesSearch(s) &&
+      this.matchesPlatform(s) &&
+      this.matchesMinSubs(s)
+    );
   }
 }

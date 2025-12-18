@@ -4,8 +4,39 @@
         <button class="btn btn-primary btn-lg" (click)="onAdd()">➕ Add Streamer</button>
     </div>
 
-    <div *ngIf="streamers.length > 0" id="streamers-list" class="grid">
-        <div *ngFor="let streamer of streamers" class="streamer-item">
+    <!-- Filters -->
+    <div *ngIf="streamers.length > 0" class="filters">
+        <div class="filters-row">
+            <div class="input-with-icon">
+                <span class="icon">🔎</span>
+                <input
+                    type="text"
+                    class="input"
+                    placeholder="Search by name or platform..."
+                    [ngModel]="searchTerm"
+                    (ngModelChange)="onSearchChange($event)"
+                />
+            </div>
+            <div class="range">
+                <label for="minSubs">Min subs: <strong>{{ minSubs | number }}</strong></label>
+                <input id="minSubs" type="range" [min]="0" [max]="maxSubs" [step]="1" [ngModel]="minSubs" (ngModelChange)="onMinSubsChange($event)" />
+            </div>
+        </div>
+        <div class="chips">
+            <button type="button" class="chip" [class.active]="selectedPlatforms.size === 0" (click)="clearPlatforms()">All</button>
+            <button
+                *ngFor="let p of platforms"
+                type="button"
+                class="chip"
+                [class.active]="selectedPlatforms.has(p)"
+                (click)="togglePlatform(p)"
+            >{{ p }}</button>
+        </div>
+        <div class="results-info">Showing {{ filteredStreamers.length }} of {{ streamers.length }}</div>
+    </div>
+
+    <div *ngIf="filteredStreamers.length > 0" id="streamers-list" class="grid">
+        <div *ngFor="let streamer of filteredStreamers" class="streamer-item">
             <div class="streamer-header">
                 <h3 class="streamer-name">{{ streamer.name }}</h3>
                 <span class="streamer-platform">{{ streamer.platform }}</span>
@@ -42,6 +73,13 @@
         <h2 class="empty-title">No Streamers Yet!</h2>
         <p class="empty-text">Add your first streamer to start tracking!</p>
         <button class="btn btn-primary btn-lg" (click)="onAdd()">➕ Add Your First Streamer</button>
+    </div>
+
+    <!-- No results state after filters -->
+    <div *ngIf="streamers.length > 0 && filteredStreamers.length === 0 && !loading" class="empty-state">
+        <div class="empty-icon">🔎</div>
+        <h2 class="empty-title">No matching streamers</h2>
+        <p class="empty-text">Try adjusting your search or filters.</p>
     </div>
 
     <!-- Loading State -->

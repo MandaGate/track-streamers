@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:2397/api'
+    production: false,
+    apiUrl: 'https://streamers_coins_server.youmrabti.com/api',
 };

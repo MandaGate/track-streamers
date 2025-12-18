@@ -15,6 +15,7 @@ import { ChartConfiguration } from 'chart.js';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   streamers: Streamer[] = [];
+  streamersWith3Plus: Streamer[] = [];
   loading = false;
   
   globalStats = {
@@ -93,7 +94,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   prepareCharts(): void {
-    if (this.streamers.length === 0) return;
+    if (this.streamers.length === 0) {
+      this.streamersWith3Plus = [];
+      this.streamerCharts = {};
+      return;
+    }
+
+    // Filter streamers that have 3 or more history updates
+    this.streamersWith3Plus = this.streamers.filter(s => (s.history?.length || 0) >= 3);
+
+    // Reset per-streamer chart map to avoid stale entries
+    this.streamerCharts = {};
 
     // 1. Distribution Chart (Doughnut)
     const platformCounts: { [key: string]: number } = {};
@@ -128,8 +139,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
 
     // 3. Individual Streamer Charts (Line)
-    this.streamers.forEach(streamer => {
+    this.streamersWith3Plus.forEach(streamer => {
       const history = streamer.history ? streamer.history.slice(-10) : []; // Last 10 updates
+      if (history.length < 3) {
+        return;
+      }
       this.streamerCharts[streamer.id] = {
         labels: history.map(h => new Date(h.timestamp).toLocaleDateString()),
         datasets: [{
