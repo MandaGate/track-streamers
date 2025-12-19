@@ -26,7 +26,7 @@ services:
         build: ./server
         container_name: streamer-server
         # ports:
-        #     - '5600:3000'
+        #     - '3000:3000'
         environment:
             - PORT=3000
             - DB_USER=${DB_USER:-postgres}
@@ -46,7 +46,7 @@ services:
         build: ./client
         container_name: streamer-client
         # ports:
-        #     - '5800:80'
+        #     - '4200:80'
         networks:
             - streamer-network
     
