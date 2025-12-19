@@ -5,6 +5,7 @@ services:
     streamer-db:
         image: postgres:15-alpine
         container_name: streamer-db
+        restart: unless-stopped
         environment:
             POSTGRES_USER: ${DB_USER:-postgres}
             POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
@@ -25,6 +26,7 @@ services:
     streamer-server:
         build: ./server
         container_name: streamer-server
+        restart: unless-stopped
         # ports:
         #     - '3000:3000'
         environment:
@@ -45,6 +47,7 @@ services:
     streamer-client:
         build: ./client
         container_name: streamer-client
+        restart: unless-stopped
         # ports:
         #     - '4200:80'
         networks:
@@ -53,6 +56,7 @@ services:
     streamer-cloudflared:
         image: cloudflare/cloudflared:latest
         container_name: streamer-cloudflared
+        restart: unless-stopped
         command: tunnel --no-autoupdate run --token eyJhIjoiODUwYmVhYzdiNWQ4YzQwYTYxYzkxYTc5NWJkMzVkMmEiLCJ0IjoiNDhkMjI3NDMtMWRkYy00NjdjLWJhZTUtZWQyM2VjY2ExNGUxIiwicyI6IlkyVXpPVEpsWmpJdFltWTFZaTAwWXpjNUxUazFPV0V0WWpjMk9ETmlOV00xTURReCJ9
         depends_on:
             - streamer-server
