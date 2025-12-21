@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+// import { RouterLink } from '@angular/router';
 import { StreamerService } from '../../services/streamer.service';
 import { ModalService } from '../../services/modal.service';
 import { Streamer } from '../../models/streamer.model';
@@ -10,7 +10,7 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'app-streamers',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './streamers.component.html',
   styleUrls: ['./streamers.component.scss']
 })

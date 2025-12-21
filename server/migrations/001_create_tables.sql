@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS streamers CASCADE;
 
 -- Create streamers table
 CREATE TABLE streamers (
-  id SERIAL PRIMARY KEY,
+  id VARCHAR(64) PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   platform VARCHAR(100) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -15,8 +15,8 @@ CREATE TABLE streamers (
 
 -- Create subscriber_history table
 CREATE TABLE subscriber_history (
-  id SERIAL PRIMARY KEY,
-  streamer_id INTEGER REFERENCES streamers(id) ON DELETE CASCADE,
+  id VARCHAR(64) PRIMARY KEY,
+  streamer_id VARCHAR(64) REFERENCES streamers(id) ON DELETE CASCADE,
   count INTEGER NOT NULL CHECK (count >= 0),
   timestamp BIGINT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -25,6 +25,10 @@ CREATE TABLE subscriber_history (
 -- Create indexes for better query performance
 CREATE INDEX idx_streamer_id ON subscriber_history(streamer_id);
 CREATE INDEX idx_timestamp ON subscriber_history(timestamp);
+
+ALTER TABLE subscriber_history
+ADD CONSTRAINT unique_streamer_timestamp
+UNIQUE (streamer_id, timestamp);
 
 -- Display success message
 SELECT 'Database tables created successfully!' AS status;

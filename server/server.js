@@ -22,7 +22,6 @@ app.use(
             const parsedUrl = new URL(`${origin}`);
 
             // Allow any localhost or 127.0.0.1 on any port
-            console.log(parsedUrl.hostname);
             if (
                 whitelist.includes(parsedUrl.hostname) ||
                 origin.match(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/)
