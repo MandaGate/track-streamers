@@ -1,0 +1,35 @@
+// Prisma schema for Streamer Tracker
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Streamer {
+  id         String   @id @db.VarChar(64)
+  name       String   @db.VarChar(255)
+  platform   String   @db.VarChar(100)
+  created_at DateTime @default(now()) @db.Timestamp(6)
+
+  subscriber_history SubscriberHistory[]
+
+  @@map("streamers")
+}
+
+model SubscriberHistory {
+  id          String   @id @db.VarChar(64)
+  streamer_id String   @db.VarChar(64)
+  count       Int
+  timestamp   BigInt
+  created_at  DateTime @default(now()) @db.Timestamp(6)
+
+  streamer Streamer @relation(fields: [streamer_id], references: [id], onDelete: Cascade)
+
+  @@index([streamer_id])
+  @@index([timestamp])
+  @@unique([streamer_id, timestamp])
+  @@map("subscriber_history")
+}

@@ -6,7 +6,10 @@
     "scripts": {
         "start": "node server.js",
         "dev": "nodemon server.js",
-        "migrate": "psql -U postgres -d streamer_tracker -f migrations/001_create_tables.sql"
+        "migrate": "psql -U postgres -d streamer_tracker -f migrations/001_create_tables.sql",
+        "prisma:generate": "npx prisma generate",
+        "prisma:migrate": "npx prisma migrate dev --name init_prisma_schema",
+        "prisma:seed": "node prisma/seed.js"
     },
     "keywords": [
         "streamer",
@@ -20,9 +23,14 @@
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
         "express": "^4.18.2",
-        "pg": "^8.11.3"
+        "pg": "^8.11.3",
+        "@prisma/client": "^5.18.0"
     },
     "devDependencies": {
-        "nodemon": "^3.1.11"
+        "nodemon": "^3.1.11",
+        "prisma": "^5.18.0"
+    },
+    "prisma": {
+        "seed": "node prisma/seed.js"
     }
 }
