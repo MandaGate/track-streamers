@@ -36,6 +36,7 @@ services:
             - DB_HOST=streamer-db
             - DB_NAME=${DB_NAME:-streamer_tracker}
             - DB_PORT=5432
+            - DATABASE_URL=postgresql://postgres:password@streamer-db:5432/streamer_tracker
             - NODE_ENV=production
         depends_on:
             streamer-db:
@@ -57,7 +58,7 @@ services:
         image: cloudflare/cloudflared:latest
         container_name: streamer-cloudflared
         restart: unless-stopped
-        command: tunnel --no-autoupdate run --token eyJhIjoiODUwYmVhYzdiNWQ4YzQwYTYxYzkxYTc5NWJkMzVkMmEiLCJ0IjoiNDhkMjI3NDMtMWRkYy00NjdjLWJhZTUtZWQyM2VjY2ExNGUxIiwicyI6IlkyVXpPVEpsWmpJdFltWTFZaTAwWXpjNUxUazFPV0V0WWpjMk9ETmlOV00xTURReCJ9
+        command: tunnel --no-autoupdate run --token eyJhIjoiODUwYmVhYzdiNWQ4YzQwYTYxYzkxYTc5NWJkMzVkMmEiLCJ0IjoiMDI4NjM1ODktNmRlNC00NGJjLThmYmEtNGNiZGNjNjVkMTQwIiwicyI6Ik1UazBaVFV3TmpndE9XUXhZeTAwTmpGbExXRmtNVGd0TnpZd1lXRTVZamxpTnpsaCJ9
         depends_on:
             - streamer-server
             - streamer-client

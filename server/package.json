@@ -8,7 +8,9 @@
         "dev": "nodemon server.js",
         "migrate": "psql -U postgres -d streamer_tracker -f migrations/001_create_tables.sql",
         "prisma:generate": "npx prisma generate",
+        "prisma:generate:Docker": "npx prisma generate --schema=./prisma/schema.prisma",
         "prisma:migrate": "npx prisma migrate dev --name init_prisma_schema",
+        "prisma:migrate:Docker": "npx prisma migrate dev --name init_prisma_schema --schema=./prisma/schema.prisma",
         "prisma:seed": "node prisma/seed.js"
     },
     "keywords": [
