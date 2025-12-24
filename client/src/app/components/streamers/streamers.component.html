@@ -29,14 +29,31 @@
             </div>
         </div>
         <div class="chips">
-            <button type="button" class="chip" [class.active]="selectedPlatforms.size === 0" (click)="clearPlatforms()">All</button>
-            <button
-                *ngFor="let p of platforms"
-                type="button"
+            <span
                 class="chip"
+                role="button"
+                [attr.aria-pressed]="selectedPlatforms.size === 0"
+                [class.active]="selectedPlatforms.size === 0"
+                (click)="clearPlatforms()"
+            >All</span>
+            <span
+                *ngFor="let p of platforms"
+                class="chip"
+                role="button"
+                [attr.aria-pressed]="selectedPlatforms.has(p)"
                 [class.active]="selectedPlatforms.has(p)"
                 (click)="togglePlatform(p)"
-            >{{ p }}</button>
+            >{{ p }}</span>
+        </div>
+        <div class="sort-bar">
+            <div class="sort-chips">
+                <span class="label">Sort by:</span>
+                <span class="chip" role="button" [attr.aria-pressed]="sortBy === 'lastUpdate'" [class.active]="sortBy === 'lastUpdate'" (click)="onSortByChange('lastUpdate')">Last Update</span>
+                <span class="chip" role="button" [attr.aria-pressed]="sortBy === 'name'" [class.active]="sortBy === 'name'" (click)="onSortByChange('name')">Name</span>
+                <span class="chip" role="button" [attr.aria-pressed]="sortBy === 'followers'" [class.active]="sortBy === 'followers'" (click)="onSortByChange('followers')">Followers</span>
+                <span class="chip" role="button" [attr.aria-pressed]="sortBy === 'platform'" [class.active]="sortBy === 'platform'" (click)="onSortByChange('platform')">Platform</span>
+            </div>
+            <span class="chip dir" role="button" [attr.aria-label]="'Sort direction ' + sortDir" (click)="toggleSortDir()">Dir {{ sortDir === 'asc' ? '↑' : '↓' }}</span>
         </div>
         <div class="results-info">Showing {{ filteredStreamers.length }} of {{ streamers.length }} • Range {{ minSubs | number }}–{{ maxSubsFilter | number }}</div>
     </div>
@@ -67,10 +84,16 @@
                     <span class="stat-item-label">Earnings</span>
                     <span class="stat-item-value">$ {{ getEarnings(streamer) | number }}</span>
                 </div>
+                <div class="stat-item">
+                    <span class="stat-item-label">Last Update</span>
+                    <span class="stat-item-value" [class.today]="isToday(getLastUpdateTimestamp(streamer))" [title]="getLastUpdateTimestamp(streamer) | date:'medium'">
+                        {{ getLastUpdateLabel(streamer) }}
+                    </span>
+                </div>
             </div>
 
             <div class="streamer-actions">
-                <button class="btn btn-sm btn-info" (click)="onUpdate(streamer)">📈 Update</button>
+                <button class="btn btn-sm btn-info" (click)="onUpdate(streamer)" [disabled]="!canUpdate(streamer)">📈 Update</button>
                 <button class="btn btn-sm btn-secondary" (click)="onEdit(streamer)">✏️ Edit</button>
                 <button class="btn btn-sm btn-danger" (click)="onDelete(streamer.id, streamer.name)">🗑️ Delete</button>
             </div>

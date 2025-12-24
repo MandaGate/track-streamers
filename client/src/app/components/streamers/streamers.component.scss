@@ -99,12 +99,19 @@
       padding: 0.4rem 0.8rem;
       border-radius: var(--radius-full);
       cursor: pointer;
+      user-select: none;
       font-size: 0.9rem;
       transition: all var(--transition-fast);
 
       &:hover {
         transform: translateY(-1px);
         box-shadow: var(--shadow-sm);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(0, 180, 255, 0.15);
+        border-color: var(--color-info);
       }
     }
 
@@ -122,6 +129,69 @@
   }
 }
 
+.sort-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+
+  .sort-chips {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .label {
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-right: 0.25rem;
+    }
+  }
+
+  .chip.dir {
+    font-weight: 700;
+    user-select: none;
+    cursor: pointer;
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(255, 168, 0, 0.2);
+      border-color: var(--color-accent);
+    }
+  }
+}
+
+/* Reusable chip styling across filters and sort bar */
+.chip {
+  border: 2px solid #E5E7EB;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.9rem;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 180, 255, 0.15);
+    border-color: var(--color-info);
+  }
+}
+
+.chip.active {
+  background: var(--color-info);
+  color: var(--text-light);
+  border-color: var(--color-info);
+  box-shadow: var(--shadow-md);
+}
+
 .stat-item-value {
   &.positive {
     color: var(--color-success);
@@ -129,6 +199,11 @@
 
   &.negative {
     color: var(--color-danger);
+  }
+
+  &.today {
+    color: var(--color-success);
+    font-weight: 700;
   }
 }
 

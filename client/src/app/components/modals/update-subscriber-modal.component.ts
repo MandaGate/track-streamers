@@ -54,11 +54,26 @@ export class UpdateSubscriberModalComponent implements OnInit {
     return this.streamer.history[this.streamer.history.length - 1].count;
   }
 
+  private alreadyUpdatedToday(): boolean {
+    if (!this.streamer || !this.streamer.history || this.streamer.history.length === 0) return false;
+    const lastTs = this.streamer.history[this.streamer.history.length - 1].timestamp;
+    if (!lastTs) return false;
+    const last = new Date(lastTs);
+    const now = new Date();
+    return last.getFullYear() === now.getFullYear() &&
+           last.getMonth() === now.getMonth() &&
+           last.getDate() === now.getDate();
+  }
+
   close(): void {
     this.modalService.close();
   }
 
   onSubmit(): void {
+    if (this.alreadyUpdatedToday()) {
+      alert('You can only update followers once per day for this streamer.');
+      return;
+    }
     if (this.streamer && this.count !== null) {
       this.streamerService.addSubscriberCount(this.streamer.id, {
         count: this.count,

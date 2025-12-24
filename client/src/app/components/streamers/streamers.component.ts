@@ -27,6 +27,10 @@ export class StreamersComponent implements OnInit, OnDestroy {
   maxSubs = 0;
   maxSubsFilter = 0;
 
+  // Sorting
+  sortBy: 'lastUpdate' | 'name' | 'followers' | 'platform' = 'lastUpdate';
+  sortDir: 'asc' | 'desc' = 'desc';
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -79,6 +83,11 @@ export class StreamersComponent implements OnInit, OnDestroy {
     return streamer.history?.length || 0;
   }
 
+  getLastUpdateTimestamp(streamer: Streamer): number {
+    if (!streamer.history || streamer.history.length === 0) return 0;
+    return streamer.history[streamer.history.length - 1]?.timestamp || 0;
+  }
+
   getEarnings(streamer: Streamer): number {
     const latest = this.getLatestCount(streamer);
     const blocks = Math.floor(latest / 19500);
@@ -99,6 +108,10 @@ export class StreamersComponent implements OnInit, OnDestroy {
   }
 
   onUpdate(streamer: Streamer): void {
+    if (!this.canUpdate(streamer)) {
+      alert('You can only update followers once per day for this streamer.');
+      return;
+    }
     this.modalService.open('update', streamer);
   }
 
@@ -144,6 +157,16 @@ export class StreamersComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
+  onSortByChange(val: 'lastUpdate' | 'name' | 'followers' | 'platform'): void {
+    this.sortBy = val;
+    this.applySorting();
+  }
+
+  toggleSortDir(): void {
+    this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    this.applySorting();
+  }
+
   private computePlatforms(list: Streamer[]): string[] {
     const set = new Set<string>();
     list.forEach(s => s.platform && set.add(s.platform));
@@ -173,6 +196,69 @@ export class StreamersComponent implements OnInit, OnDestroy {
     return this.getLatestCount(s) <= this.maxSubsFilter;
   }
 
+  canUpdate(streamer: Streamer): boolean {
+    const lastTs = this.getLastUpdateTimestamp(streamer);
+    if (!lastTs) return true;
+    const last = new Date(lastTs);
+    const now = new Date();
+    return !(last.getFullYear() === now.getFullYear() &&
+             last.getMonth() === now.getMonth() &&
+             last.getDate() === now.getDate());
+  }
+
+  isToday(ts: number): boolean {
+    if (!ts) return false;
+    const d = new Date(ts);
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() &&
+           d.getMonth() === now.getMonth() &&
+           d.getDate() === now.getDate();
+  }
+
+  getLastUpdateLabel(streamer: Streamer): string {
+    const ts = this.getLastUpdateTimestamp(streamer);
+    if (!ts) return '—';
+    if (this.isToday(ts)) return 'Today';
+    const d = new Date(ts);
+    try {
+      return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' }) +
+             ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return d.toLocaleString();
+    }
+  }
+
+  private compare(a: Streamer, b: Streamer): number {
+    let av: string | number = 0;
+    let bv: string | number = 0;
+    switch (this.sortBy) {
+      case 'lastUpdate':
+        av = this.getLastUpdateTimestamp(a);
+        bv = this.getLastUpdateTimestamp(b);
+        break;
+      case 'name':
+        av = a.name.toLowerCase();
+        bv = b.name.toLowerCase();
+        break;
+      case 'followers':
+        av = this.getLatestCount(a);
+        bv = this.getLatestCount(b);
+        break;
+      case 'platform':
+        av = (a.platform || '').toLowerCase();
+        bv = (b.platform || '').toLowerCase();
+        break;
+    }
+    const res = typeof av === 'number' && typeof bv === 'number'
+      ? av - bv
+      : String(av).localeCompare(String(bv));
+    return this.sortDir === 'asc' ? res : -res;
+  }
+
+  applySorting(): void {
+    this.filteredStreamers = [...this.filteredStreamers].sort((a, b) => this.compare(a, b));
+  }
+
   applyFilters(): void {
     this.filteredStreamers = (this.streamers || []).filter(s =>
       this.matchesSearch(s) &&
@@ -180,5 +266,6 @@ export class StreamersComponent implements OnInit, OnDestroy {
       this.matchesMinSubs(s) &&
       this.matchesMaxSubs(s)
     );
+    this.applySorting();
   }
 }
