@@ -105,7 +105,9 @@ app.listen(PORT, () => {
     console.log(`   Get streamers: http://localhost:${PORT}/api/streamers`);
     console.log('\n📝 Press Ctrl+C to stop the server\n');
 });
-// cloudflared access tcp --hostname=https://streamers_coins_db.youmrabti.com --url=localhost:4322
+// cloudflared access tcp --hostname=https://streamers_coins_db.youmrabti.com --url=localhost:5400
+
+// ========================================
 // Graceful shutdown
 process.on('SIGINT', async () => {
     console.log('\n\n🛑 Shutting down gracefully...');

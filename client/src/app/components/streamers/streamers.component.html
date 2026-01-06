@@ -71,18 +71,32 @@
                     <span class="stat-item-value">{{ getLatestCount(streamer) | number }}</span>
                 </div>
                 <div class="stat-item">
+                    <span class="stat-item-label">Earnings</span>
+                    <span class="stat-item-value">$ {{ getEarnings(streamer) | number }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-item-label">Tracked Subs</span>
+                    <span class="stat-item-value">{{ differenceLatestHistory(streamer) | number }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-item-label">Earnings Tracked</span>
+                    <span class="stat-item-value">$ {{ getEarningsTracked(streamer) | number }}</span>
+                </div>
+                <div class="stat-item">
                     <span class="stat-item-label">Growth</span>
                     <span class="stat-item-value" [class.positive]="getGrowth(streamer) > 0" [class.negative]="getGrowth(streamer) < 0">
                         {{ getGrowth(streamer) >= 0 ? '+' : '' }}{{ getGrowth(streamer) | number }}
                     </span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-item-label">Updates</span>
-                    <span class="stat-item-value">{{ getTotalUpdates(streamer) }}</span>
+                    <span class="stat-item-label">Growth Earnings</span>
+                    <span class="stat-item-value">
+                       $ {{ getGrowthEarnings(streamer) | number }}
+                    </span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-item-label">Earnings</span>
-                    <span class="stat-item-value">$ {{ getEarnings(streamer) | number }}</span>
+                    <span class="stat-item-label">Updates</span>
+                    <span class="stat-item-value">{{ getTotalUpdates(streamer) }}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-item-label">Last Update</span>
