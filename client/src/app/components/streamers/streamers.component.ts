@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// import { RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { StreamerService } from '../../services/streamer.service';
 import { ModalService } from '../../services/modal.service';
 import { Streamer } from '../../models/streamer.model';
@@ -10,7 +10,7 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
     selector: 'app-streamers',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RouterLink],
     templateUrl: './streamers.component.html',
     styleUrls: ['./streamers.component.scss'],
 })
@@ -108,7 +108,7 @@ export class StreamersComponent implements OnInit, OnDestroy {
         return blocks;
     }
 
-    onDelete(id: number, name: string): void {
+    onDelete(id: string, name: string): void {
         if (confirm(`Are you sure you want to delete ${name}?`)) {
             this.streamerService.deleteStreamer(id).subscribe({
                 next: () => console.log('Deleted successfully'),

@@ -29,7 +29,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Chart Data
   distributionData: ChartConfiguration['data'] = { datasets: [] };
   comparisonData: ChartConfiguration['data'] = { datasets: [] };
-  streamerCharts: { [key: number]: ChartConfiguration['data'] } = {};
+  streamerCharts: { [key: string]: ChartConfiguration['data'] } = {};
   
   // Chart Options
   doughnutOptions: ChartConfiguration['options'] = {

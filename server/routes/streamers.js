@@ -42,6 +42,37 @@ router.get('/', async (req, res) => {
 });
 
 // ========================================
+// GET /api/streamers/:id - Get a single streamer with history
+// ========================================
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const streamerResult = await pool.query(
+            'SELECT id, name, platform, created_at FROM streamers WHERE id = $1 LIMIT 1',
+            [id]
+        );
+        if (streamerResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Streamer not found' });
+        }
+        const streamer = streamerResult.rows[0];
+        const historyResult = await pool.query(
+            'SELECT count, timestamp FROM subscriber_history WHERE streamer_id = $1 ORDER BY timestamp ASC',
+            [streamer.id]
+        );
+        return res.json({
+            id: streamer.id.toString(),
+            name: streamer.name,
+            platform: streamer.platform,
+            history: historyResult.rows.map((h) => ({ count: h.count, timestamp: parseInt(h.timestamp) })),
+            created_at: streamer.created_at,
+        });
+    } catch (error) {
+        console.error('Error fetching streamer by id:', error);
+        res.status(500).json({ error: 'Failed to fetch streamer' });
+    }
+});
+
+// ========================================
 // POST /api/streamers - Create a new streamer
 // ========================================
 router.post('/', async (req, res) => {

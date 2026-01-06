@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/streamers/streamers.component').then(m => m.StreamersComponent)
   },
   {
+    path: 'streamers/:id',
+    loadComponent: () => import('./components/streamer-detail/streamer-detail.component').then(m => m.StreamerDetailComponent)
+  },
+  {
     path: '**',
     redirectTo: '/dashboard'
   }

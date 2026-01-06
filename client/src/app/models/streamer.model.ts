@@ -1,5 +1,5 @@
 export interface Streamer {
-  id: number;
+  id: string;
   name: string;
   platform: string;
   history: SubscriberHistory[];

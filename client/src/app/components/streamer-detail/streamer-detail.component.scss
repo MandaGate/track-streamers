@@ -1,0 +1,16 @@
+.detail-view { padding: 16px; }
+.header { display: flex; align-items: baseline; gap: 12px; }
+.header .platform { color: #666; font-weight: 400; }
+.back { text-decoration: none; color: #4C9EEB; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+.card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px; }
+.label { font-size: 12px; color: #666; }
+.value { font-size: 20px; font-weight: 600; }
+.value.positive { color: #2e7d32; }
+.value.negative { color: #c62828; }
+.sub { font-size: 12px; color: #888; }
+.progress { background: #f0f0f0; height: 8px; border-radius: 6px; margin-top: 6px; overflow: hidden; }
+.bar { background: #4C9EEB; height: 100%; }
+.chart-section { margin-top: 24px; }
+.loading-state, .empty-state { padding: 24px; color: #666; }
+.actions { margin-top: 12px; }

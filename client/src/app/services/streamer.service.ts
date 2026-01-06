@@ -56,7 +56,7 @@ export class StreamerService {
   /**
    * Update an existing streamer
    */
-  updateStreamer(id: number, data: UpdateStreamerDto): Observable<Streamer> {
+  updateStreamer(id: string, data: UpdateStreamerDto): Observable<Streamer> {
     this.loadingSubject.next(true);
     return this.http.put<Streamer>(`${this.apiUrl}/streamers/${id}`, data).pipe(
       tap(updatedStreamer => {
@@ -75,7 +75,7 @@ export class StreamerService {
   /**
    * Delete a streamer
    */
-  deleteStreamer(id: number): Observable<void> {
+  deleteStreamer(id: string): Observable<void> {
     this.loadingSubject.next(true);
     return this.http.delete<void>(`${this.apiUrl}/streamers/${id}`).pipe(
       tap(() => {
@@ -90,12 +90,33 @@ export class StreamerService {
   /**
    * Add subscriber count to a streamer
    */
-  addSubscriberCount(id: number, data: AddSubscriberDto): Observable<any> {
+  addSubscriberCount(id: string, data: AddSubscriberDto): Observable<any> {
     this.loadingSubject.next(true);
     return this.http.post(`${this.apiUrl}/streamers/${id}/subscribers`, data).pipe(
       tap(() => {
         // Reload streamers to get updated history
         this.loadStreamers().subscribe();
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Load single streamer by id and merge into cache
+   */
+  loadStreamerById(id: string): Observable<Streamer> {
+    this.loadingSubject.next(true);
+    return this.http.get<Streamer>(`${this.apiUrl}/streamers/${id}`).pipe(
+      tap((s) => {
+        const current = this.streamersSubject.value;
+        const idx = current.findIndex(cs => cs.id === s.id);
+        if (idx >= 0) {
+          current[idx] = s;
+          this.streamersSubject.next([...current]);
+        } else {
+          this.streamersSubject.next([...current, s]);
+        }
+        this.loadingSubject.next(false);
       }),
       catchError(this.handleError)
     );
