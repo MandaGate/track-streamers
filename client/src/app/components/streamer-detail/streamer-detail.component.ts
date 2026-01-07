@@ -228,7 +228,18 @@ export class StreamerDetailComponent implements OnInit, OnDestroy {
         return {
             plugins: {
                 legend: { display: true },
-                tooltip: { enabled: true },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: (context: any) => {
+                            const value = (context?.parsed?.y ?? context?.raw ?? 0) as number;
+                            const revenue = Math.floor(value / 19500) * 30;
+                            const nf = new Intl.NumberFormat();
+                            const sign = value >= 0 ? '+' : '';
+                            return `Growth: ${sign}${nf.format(value)} • Revenue: $${nf.format(revenue)}`;
+                        },
+                    },
+                },
             },
             scales: {
                 y: {
