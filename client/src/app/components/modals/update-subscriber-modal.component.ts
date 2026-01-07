@@ -58,11 +58,9 @@ export class UpdateSubscriberModalComponent implements OnInit {
     if (!this.streamer || !this.streamer.history || this.streamer.history.length === 0) return false;
     const lastTs = this.streamer.history[this.streamer.history.length - 1].timestamp;
     if (!lastTs) return false;
-    const last = new Date(lastTs);
-    const now = new Date();
-    return last.getFullYear() === now.getFullYear() &&
-           last.getMonth() === now.getMonth() &&
-           last.getDate() === now.getDate();
+    const nowMs = Date.now();
+    const twelveHoursMs = 12 * 60 * 60 * 1000;
+    return nowMs - lastTs < twelveHoursMs;
   }
 
   close(): void {
@@ -71,7 +69,7 @@ export class UpdateSubscriberModalComponent implements OnInit {
 
   onSubmit(): void {
     if (this.alreadyUpdatedToday()) {
-      alert('You can only update followers once per day for this streamer.');
+      alert('You can only update subscribers once every 12 hours for this streamer.');
       return;
     }
     if (this.streamer && this.count !== null) {

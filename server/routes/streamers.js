@@ -199,6 +199,25 @@ router.post('/:id/subscribers', async (req, res) => {
             return res.status(404).json({ error: 'Streamer not found' });
         }
 
+        // Enforce 12-hour minimum between updates
+        const lastResult = await pool.query(
+            'SELECT timestamp FROM subscriber_history WHERE streamer_id = $1 ORDER BY timestamp DESC LIMIT 1',
+            [streamerId]
+        );
+        if (lastResult.rows.length > 0) {
+            const lastTs = parseInt(lastResult.rows[0].timestamp);
+            const twelveHoursMs = 12 * 60 * 60 * 1000;
+            if (typeof timestamp === 'number' && timestamp - lastTs < twelveHoursMs) {
+                const remainingMs = twelveHoursMs - (timestamp - lastTs);
+                const remainingHours = Math.floor(remainingMs / (60 * 60 * 1000));
+                const remainingMinutes = Math.ceil((remainingMs % (60 * 60 * 1000)) / (60 * 1000));
+                return res.status(400).json({
+                    error: 'Cooldown not met',
+                    message: `Please wait ${remainingHours}h ${remainingMinutes}m before updating again`,
+                });
+            }
+        }
+
         const uuid = crypto.randomUUID();
 
         // Insert new subscriber count

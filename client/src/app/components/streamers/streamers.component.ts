@@ -215,13 +215,9 @@ export class StreamersComponent implements OnInit, OnDestroy {
     canUpdate(streamer: Streamer): boolean {
         const lastTs = this.getLastUpdateTimestamp(streamer);
         if (!lastTs) return true;
-        const last = new Date(lastTs);
-        const now = new Date();
-        return !(
-            last.getFullYear() === now.getFullYear() &&
-            last.getMonth() === now.getMonth() &&
-            last.getDate() === now.getDate()
-        );
+        const nowMs = Date.now();
+        const twelveHoursMs = 12 * 60 * 60 * 1000;
+        return nowMs - lastTs >= twelveHoursMs;
     }
 
     isToday(ts: number): boolean {
