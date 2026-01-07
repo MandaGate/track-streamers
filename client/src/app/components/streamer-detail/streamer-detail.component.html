@@ -1,56 +1,56 @@
 <div class="detail-view" *ngIf="streamer as s; else loadingOrMissing">
-  <div class="header">
-    <a [routerLink]="['/streamers']" class="back">← Back</a>
-    <h2>{{ s.name }} <span class="platform">({{ s.platform }})</span></h2>
-  </div>
+    <div class="header">
+        <a [routerLink]="['/streamers']" class="back">← Back</a>
+        <h2>{{ s.name }} <span class="platform">({{ s.platform }})</span></h2>
+    </div>
 
-  <div class="summary-grid">
-    <div class="card">
-      <div class="label">Current Subs</div>
-      <div class="value">{{ getLatestCount() | number }}</div>
-      <div class="sub">Last update: {{ getLastUpdateTimestamp() | date:'medium' }}</div>
+    <div class="summary-grid">
+        <div class="card">
+            <div class="label">Current Subs</div>
+            <div class="value">{{ getLatestCount() | number }}</div>
+            <div class="sub">Last update: {{ getLastUpdateTimestamp() | date:'medium' }}</div>
+        </div>
+        <div class="card">
+            <div class="label">Weekly Growth</div>
+            <div class="value" [class.positive]="getWeeklyGrowth() > 0" [class.negative]="getWeeklyGrowth() < 0">
+                {{ getWeeklyGrowth() >= 0 ? '+' : '' }}{{ getWeeklyGrowth() | number }}
+            </div>
+            <div class="sub">Target: 19,500 per week</div>
+            <div class="progress">
+                <div class="bar" [style.width.%]="getTargetProgressPercent()"></div>
+            </div>
+            <div class="sub">Progress: {{ getTargetProgressPercent() }}%</div>
+        </div>
+        <div class="card">
+            <div class="label">Weekly Earnings</div>
+            <div class="value">$ {{ getWeeklyEarnings() | number }}</div>
+            <div class="sub">$30 per 19,500 subs</div>
+        </div>
+        <div class="card">
+            <div class="label">Estimated Monthly Earnings</div>
+            <div class="value">$ {{ estimateMonthlyEarnings() | number }}</div>
+            <div class="sub">Avg of last 4 weeks × 4</div>
+        </div>
+        <div class="card">
+            <div class="label">Tracked Subs</div>
+            <div class="value">{{ getTrackedSubs() | number }}</div>
+            <div class="sub">From first entry to latest</div>
+        </div>
+        <div class="card">
+            <div class="label">Tracked Earnings</div>
+            <div class="value">$ {{ getTrackedEarnings() | number }}</div>
+            <div class="sub">$30 per 19,500 tracked subs</div>
+        </div>
     </div>
-    <div class="card">
-      <div class="label">Weekly Growth</div>
-      <div class="value" [class.positive]="getWeeklyGrowth() > 0" [class.negative]="getWeeklyGrowth() < 0">
-        {{ getWeeklyGrowth() >= 0 ? '+' : '' }}{{ getWeeklyGrowth() | number }}
-      </div>
-      <div class="sub">Target: 19,500 per week</div>
-      <div class="progress">
-        <div class="bar" [style.width.%]="getTargetProgressPercent()"></div>
-      </div>
-      <div class="sub">Progress: {{ getTargetProgressPercent() }}%</div>
-    </div>
-    <div class="card">
-      <div class="label">Weekly Earnings</div>
-      <div class="value">$ {{ getWeeklyEarnings() | number }}</div>
-      <div class="sub">$30 per 19,500 subs</div>
-    </div>
-    <div class="card">
-      <div class="label">Estimated Monthly Earnings</div>
-      <div class="value">$ {{ estimateMonthlyEarnings() | number }}</div>
-      <div class="sub">Avg of last 4 weeks × 4</div>
-    </div>
-    <div class="card">
-      <div class="label">Tracked Subs</div>
-      <div class="value">{{ getTrackedSubs() | number }}</div>
-      <div class="sub">From first entry to latest</div>
-    </div>
-    <div class="card">
-      <div class="label">Tracked Earnings</div>
-      <div class="value">$ {{ getTrackedEarnings() | number }}</div>
-      <div class="sub">$30 per 19,500 tracked subs</div>
-    </div>
-  </div>
 
-  <div class="chart-section">
-    <h3>Weekly Growth Trend</h3>
-    <app-chart [type]="'line'" [data]="chartData" [options]="chartOptions"></app-chart>
-  </div>
+    <div class="chart-section">
+        <h3>Weekly Growth Trend</h3>
+        <app-chart [type]="'line'" [data]="chartData" [options]="chartOptions"></app-chart>
+    </div>
 </div>
 
 <ng-template #loadingOrMissing>
-  <div class="loading-state" *ngIf="loading">Loading streamer…</div>
-  <div class="empty-state" *ngIf="!loading">Streamer not found.</div>
-  <div class="actions"><a [routerLink]="['/streamers']" class="back">← Back to list</a></div>
+    <div class="loading-state" *ngIf="loading">Loading streamer…</div>
+    <div class="empty-state" *ngIf="!loading">Streamer not found.</div>
+    <div class="actions"><a [routerLink]="['/streamers']" class="back">← Back to list</a></div>
 </ng-template>

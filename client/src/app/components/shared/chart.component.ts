@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild, ElementRef, AfterViewInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 
@@ -31,19 +31,26 @@ export class ChartComponent implements AfterViewInit, OnChanges {
   private chart: Chart | null = null;
 
   ngAfterViewInit(): void {
+    // Initialize only when canvas is ready; data may be empty initially
     this.createChart();
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (this.chart) {
-      this.chart.data = this.data;
+      // Update in-place to ensure Chart.js picks up changes reliably
+      this.chart.data.labels = (this.data?.labels as any) || [];
+      this.chart.data.datasets = this.data?.datasets || [];
       this.chart.options = this.options || {};
       this.chart.update();
+    } else if (this.chartCanvas) {
+      // Chart not created yet but inputs arrived
+      this.createChart();
     }
   }
 
   private createChart(): void {
     if (!this.chartCanvas) return;
+    if (this.chart) return;
 
     this.chart = new Chart(this.chartCanvas.nativeElement, {
       type: this.type,
@@ -51,8 +58,8 @@ export class ChartComponent implements AfterViewInit, OnChanges {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        ...this.options
-      }
+        ...this.options,
+      },
     });
   }
 }

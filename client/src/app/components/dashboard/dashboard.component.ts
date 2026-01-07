@@ -144,7 +144,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // 3. Individual Streamer Charts (Line)
     this.streamersWith3Plus.forEach(streamer => {
-      const history = streamer.history ? streamer.history.slice(-10) : []; // Last 10 updates
+      const history = streamer.history ? streamer.history/* .slice(-10) */ : []; // Last 10 updates
       if (history.length < 3) {
         return;
       }
